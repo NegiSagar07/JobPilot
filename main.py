@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from database import engine
 from models import Base
-from router import agent, auth, candidate, jobs, user, resume
+from router import agent, auth, candidate, content, jobs, resume, user
 
 
 @asynccontextmanager
@@ -25,3 +25,4 @@ app.include_router(candidate.router)
 app.include_router(jobs.router)
 app.include_router(agent.router)
 app.include_router(resume.router)
+app.include_router(content.router)

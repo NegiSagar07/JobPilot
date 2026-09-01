@@ -2,8 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from core.security import hash_password, verify_password
-from models import CandidateProfile, JobPosting, Score, User
+from models import CandidateProfile, GeneratedContent, JobPosting, Score, User
 from schemas import (
+
     CandidateProfileCreate,
     JobPostingCreate,
     ScoreCreate,
@@ -196,3 +197,42 @@ async def create_score(db: AsyncSession, score: ScoreCreate) -> Score:
     await db.commit()
     await db.refresh(existing_score)
     return existing_score
+
+
+async def create_generated_content(
+    db: AsyncSession,
+    job_id: str,
+    candidate_profile_id: int,
+    content_type: str,
+    content: str,
+) -> GeneratedContent:
+    """Persist generated application content for a candidate and job."""
+    db_content = GeneratedContent(
+        job_id=job_id,
+        candidate_profile_id=candidate_profile_id,
+        content_type=content_type,
+        content=content,
+    )
+    db.add(db_content)
+    await db.commit()
+    await db.refresh(db_content)
+    return db_content
+
+
+async def get_content_by_job_and_profile(
+    db: AsyncSession,
+    job_id: str,
+    candidate_profile_id: int,
+    content_type: str | None = None,
+) -> list[GeneratedContent]:
+    """Retrieve generated content for a given job and candidate profile."""
+    stmt = select(GeneratedContent).filter(
+        GeneratedContent.job_id == job_id,
+        GeneratedContent.candidate_profile_id == candidate_profile_id,
+    )
+    if content_type:
+        stmt = stmt.filter(GeneratedContent.content_type == content_type)
+    stmt = stmt.order_by(GeneratedContent.generated_at.desc())
+    result = await db.execute(stmt)
+    return list(result.scalars().all())
+

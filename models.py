@@ -119,3 +119,30 @@ class Score(Base):
     scored_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+# ---------------------------------------------------------------------------
+# Content Generation — matches Content Generation Spec
+# ---------------------------------------------------------------------------
+class GeneratedContent(Base):
+    __tablename__ = "generated_content"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    # Foreign keys that establish ownership: which job and which profile
+    job_id: Mapped[str] = mapped_column(
+        String, ForeignKey("jobs.job_id"), nullable=False
+    )
+    candidate_profile_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("candidate_profiles.id"), nullable=False
+    )
+
+    # One of: cover_letter | application_email | recruiter_message
+    content_type: Mapped[str] = mapped_column(String, nullable=False)
+
+    # The LLM-generated text — never NULL; generation failures raise before reaching here
+    content: Mapped[str] = mapped_column(String, nullable=False)
+
+    generated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )

@@ -1,6 +1,8 @@
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel, Field, ConfigDict
+
 
 
 class UserBase(BaseModel):
@@ -163,3 +165,35 @@ class ResumeUploadResponse(BaseModel):
     resume_id: int
     candidate_profile_id: int
     skills: list[str]
+
+
+# ---------------------------------------------------------------------------
+# Content Generation Schemas
+# ---------------------------------------------------------------------------
+
+class ContentType(str, Enum):
+    """Supported application content types."""
+    cover_letter = "cover_letter"
+    application_email = "application_email"
+    recruiter_message = "recruiter_message"
+
+
+class ContentGenerationRequest(BaseModel):
+    """Request body for POST /content/generate."""
+    job_id: str = Field(..., description="ID of the job to generate content for")
+    content_type: ContentType = Field(
+        ...,
+        description="Type of content to generate: cover_letter | application_email | recruiter_message",
+    )
+
+
+class GeneratedContentResponse(BaseModel):
+    """Response body returned after successful content generation."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int = Field(..., description="Primary key of the generated content row")
+    job_id: str = Field(..., description="Job this content was generated for")
+    candidate_profile_id: int = Field(..., description="Candidate profile this content belongs to")
+    content_type: str = Field(..., description="The content type that was generated")
+    content: str = Field(..., description="The generated application content text")
+    generated_at: datetime = Field(..., description="When this content was generated")
