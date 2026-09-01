@@ -1,0 +1,25 @@
+# Environment variables
+.env
+
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python cache & build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Databases
+*.db
+test.db
+
+# Uploads & local media
+uploads/
+
+# Misc
+JobPilot/
+.DS_Store

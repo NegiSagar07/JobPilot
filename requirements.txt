@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+aiosqlite
+pydantic
+python-dotenv
+passlib[bcrypt]
+PyJWT
+python-multipart
+apify-client
+langchain-ollama
+langgraph
+pypdf
